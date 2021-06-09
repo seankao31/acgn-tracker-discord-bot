@@ -58,3 +58,19 @@ def initial_db(data):
             progress['user'], progress['title'], progress['episode']))
 
     return AcgnTrackerDatabase(acgns, progresses)
+
+
+def test_acgn_find_not_in_db(initial_db):
+    fake_acgn_title = 'xxx'
+    empty_db = AcgnTrackerDatabase()
+    assert empty_db.acgn_find(fake_acgn_title) == []
+    assert initial_db.acgn_find(fake_acgn_title) == []
+
+
+def test_acgn_find_in_db(data, initial_db):
+    acgn_data, _ = data
+    acgn_matched = initial_db.acgn_find(acgn_data[0]['title'])
+    assert len(acgn_matched) == 1
+    acgn = acgn_matched[0]
+    assert acgn.title == acgn_data[0]['title']
+    assert acgn.final_episode == acgn_data[0]['final_episode']
