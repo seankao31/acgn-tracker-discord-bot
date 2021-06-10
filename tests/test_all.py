@@ -114,3 +114,30 @@ def test_acgn_update_existed(data, initial_db):
     the_acgn = acgn_matched[0]
     assert the_acgn.title == title and \
         the_acgn.final_episode == new_final_episode
+
+
+def test_progress_find_not_in_db(data, initial_db):
+    _, progress_data = data
+    user_true = progress_data[0]['user']
+    title_true = progress_data[0]['title']
+    user_false = 1000
+    title_false = 'xxx'
+    empty_db = AcgnTrackerDatabase()
+    assert empty_db.progress_find(user_false, title_false) == []
+
+    assert initial_db.progress_find(user_false, title_false) == []
+    assert initial_db.progress_find(user_true, title_false) == []
+    assert initial_db.progress_find(user_false, title_true) == []
+
+
+def test_progress_find_in_db(data, initial_db):
+    _, progress_data = data
+    user = progress_data[0]['user']
+    title = progress_data[0]['title']
+    episode = progress_data[0]['episode']
+    progress_matched = initial_db.progress_find(user, title)
+    assert len(progress_matched) == 1
+    progress = progress_matched[0]
+    assert progress.user == user
+    assert progress.title == title
+    assert progress.episode == episode

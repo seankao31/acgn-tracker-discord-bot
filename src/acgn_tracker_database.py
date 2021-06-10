@@ -21,3 +21,10 @@ class AcgnTrackerDatabase:
             return []
         # if db setup correctly then it should only have one element
         return [acgn for acgn in self.acgns if acgn.title == title]
+
+    def progress_find(self, user, title: str):
+        if not self.progresses:
+            return []
+        # if db setup correctly then it should only have one element
+        return [progress for progress in self.progresses
+                if progress.user is user and progress.title is title]
