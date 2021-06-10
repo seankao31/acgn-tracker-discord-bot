@@ -1,4 +1,5 @@
 import pytest
+import random
 from src.acgn_data import AcgnData
 from src.acgn_tracker_database import AcgnTrackerDatabase
 from src.progress_data import ProgressData
@@ -46,6 +47,18 @@ def data():
 
 
 @pytest.fixture
+def random_acgn(data):
+    acgn_data, _ = data
+    return random.choice(acgn_data)
+
+
+@pytest.fixture
+def random_progress(data):
+    _, progress_data = data
+    return random.choice(progress_data)
+
+
+@pytest.fixture
 def initial_db(data):
     acgn_data, progress_data = data
     acgns = []
@@ -67,25 +80,29 @@ def test_acgn_find_not_in_db(initial_db):
     assert initial_db.acgn_find(fake_acgn_title) == []
 
 
-def test_acgn_find_in_db(data, initial_db):
-    acgn_data, _ = data
-    acgn_matched = initial_db.acgn_find(acgn_data[0]['title'])
+@pytest.mark.repeat(5)
+def test_acgn_find_in_db(random_acgn, initial_db):
+    acgn_matched = initial_db.acgn_find(random_acgn['title'])
     assert len(acgn_matched) == 1
     acgn = acgn_matched[0]
-    assert acgn.title == acgn_data[0]['title']
-    assert acgn.final_episode == acgn_data[0]['final_episode']
+    assert acgn.title == random_acgn['title']
+    assert acgn.final_episode == random_acgn['final_episode']
 
 
-def test_acgn_update_add_new_in_empty(data):
-    acgn_data, progress_data = data
-    title = acgn_data[0]['title']
-    final_episode = acgn_data[0]['final_episode']
+@pytest.mark.repeat(5)
+def test_acgn_update_add_new_in_empty(random_acgn):
+    title = random_acgn['title']
+    final_episode = random_acgn['final_episode']
+    print(AcgnTrackerDatabase().acgns)
     db = AcgnTrackerDatabase()
-
+    print(db.acgns)
     db.acgn_update(title, final_episode)
+    for acgn in db.acgns:
+        print(acgn.title)
     assert len(db.acgns) == 1
     the_acgn = db.acgns[0]
-    assert the_acgn.title == title and the_acgn.final_episode == final_episode
+    assert the_acgn.title == title
+    assert the_acgn.final_episode == final_episode
 
 
 def test_acgn_update_add_new_in_nonempty(initial_db):
@@ -97,29 +114,29 @@ def test_acgn_update_add_new_in_nonempty(initial_db):
     db.acgn_update(new_title, new_final_episode)
     assert len(db.acgns) == initial_len + 1
     the_acgn = db.acgns[-1]
-    assert the_acgn.title == new_title and \
-        the_acgn.final_episode == new_final_episode
+    assert the_acgn.title == new_title
+    assert the_acgn.final_episode == new_final_episode
 
 
-def test_acgn_update_existed(data, initial_db):
+@pytest.mark.repeat(5)
+def test_acgn_update_existed(random_acgn, initial_db):
     db = initial_db
     initial_len = len(db.acgns)
-    acgn_data, _ = data
-    title = acgn_data[0]['title']
-    new_final_episode = acgn_data[0]['final_episode'] + 10
+    title = random_acgn['title']
+    new_final_episode = random_acgn['final_episode'] + 10
 
     db.acgn_update(title, new_final_episode)
     assert len(db.acgns) == initial_len
     acgn_matched = db.acgn_find(title)
     the_acgn = acgn_matched[0]
-    assert the_acgn.title == title and \
-        the_acgn.final_episode == new_final_episode
+    assert the_acgn.title == title
+    assert the_acgn.final_episode == new_final_episode
 
 
-def test_progress_find_not_in_db(data, initial_db):
-    _, progress_data = data
-    user_true = progress_data[0]['user']
-    title_true = progress_data[0]['title']
+@pytest.mark.repeat(5)
+def test_progress_find_not_in_db(random_progress, initial_db):
+    user_true = random_progress['user']
+    title_true = random_progress['title']
     user_false = 1000
     title_false = 'xxx'
     empty_db = AcgnTrackerDatabase()
@@ -130,11 +147,11 @@ def test_progress_find_not_in_db(data, initial_db):
     assert initial_db.progress_find(user_false, title_true) == []
 
 
-def test_progress_find_in_db(data, initial_db):
-    _, progress_data = data
-    user = progress_data[0]['user']
-    title = progress_data[0]['title']
-    episode = progress_data[0]['episode']
+@pytest.mark.repeat(5)
+def test_progress_find_in_db(random_progress, initial_db):
+    user = random_progress['user']
+    title = random_progress['title']
+    episode = random_progress['episode']
     progress_matched = initial_db.progress_find(user, title)
     assert len(progress_matched) == 1
     progress = progress_matched[0]
@@ -143,23 +160,23 @@ def test_progress_find_in_db(data, initial_db):
     assert progress.episode == episode
 
 
-def test_progress_update_add_new_in_empty_fail(data):
-    _, progress_data = data
-    user = 777
-    title = 'xxx'
-    episode = 100
+@pytest.mark.repeat(5)
+def test_progress_update_add_new_in_empty_fail(random_progress):
+    user = random_progress['user']
+    title = random_progress['title']
+    episode = random_progress['episode']
     db = AcgnTrackerDatabase()
 
     db.progress_update(user, title, episode)
     assert db.progresses == []
 
 
-def test_progress_update_add_new_in_nonempty(data, initial_db):
+@pytest.mark.repeat(5)
+def test_progress_update_add_new_in_nonempty(random_acgn, initial_db):
     db = initial_db
-    acgn_data, _ = data
     initial_len = len(db.progresses)
     new_user = 777
-    title = acgn_data[0]['title']
+    title = random_acgn['title']
     episode = 1
 
     # add new progress whose title already exist
@@ -178,13 +195,13 @@ def test_progress_update_add_new_in_nonempty(data, initial_db):
         assert progress.title != title_fake
 
 
-def test_progress_update_existed(data, initial_db):
+@pytest.mark.repeat(5)
+def test_progress_update_existed(random_progress, initial_db):
     db = initial_db
     initial_len = len(db.progresses)
-    _, progress_data = data
-    user = progress_data[0]['user']
-    title = progress_data[0]['title']
-    new_episode = progress_data[0]['episode'] + 1
+    user = random_progress['user']
+    title = random_progress['title']
+    new_episode = random_progress['episode'] + 1
 
     db.progress_update(user, title, new_episode)
     assert len(db.progresses) == initial_len

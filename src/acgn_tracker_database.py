@@ -3,7 +3,11 @@ from .progress_data import ProgressData
 
 
 class AcgnTrackerDatabase:
-    def __init__(self, acgns=[], progresses=[]):
+    def __init__(self, acgns=None, progresses=None):
+        if acgns is None:
+            acgns = []
+        if progresses is None:
+            progresses = []
         self.acgns = acgns
         self.progresses = progresses
 
@@ -24,7 +28,7 @@ class AcgnTrackerDatabase:
 
     def progress_update(self, user, title: str, episode):
         acgn_matched = self.acgn_find(title)
-        if acgn_matched == []:
+        if not acgn_matched:
             # no such title
             return
 
@@ -32,7 +36,7 @@ class AcgnTrackerDatabase:
         # watch out non-integer episodes, can't expect int or even number?
 
         progress_matched = self.progress_find(user, title)
-        if progress_matched == []:
+        if not progress_matched:
             new_progress = ProgressData(user, title, episode)
             self.progresses.append(new_progress)
         else:
