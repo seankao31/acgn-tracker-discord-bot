@@ -141,3 +141,55 @@ def test_progress_find_in_db(data, initial_db):
     assert progress.user == user
     assert progress.title == title
     assert progress.episode == episode
+
+
+def test_progress_update_add_new_in_empty_fail(data):
+    _, progress_data = data
+    user = 777
+    title = 'xxx'
+    episode = 100
+    db = AcgnTrackerDatabase()
+
+    db.progress_update(user, title, episode)
+    assert db.progresses == []
+
+
+def test_progress_update_add_new_in_nonempty(data, initial_db):
+    db = initial_db
+    acgn_data, _ = data
+    initial_len = len(db.progresses)
+    new_user = 777
+    title = acgn_data[0]['title']
+    episode = 1
+
+    # add new progress whose title already exist
+    db.progress_update(new_user, title, episode)
+    assert len(db.progresses) == initial_len + 1
+    the_progress = db.progresses[-1]
+    assert the_progress.user == new_user
+    assert the_progress.title == title
+    assert the_progress.episode == episode
+
+    # add new progress with a new title. should fail
+    title_fake = 'xxx'
+    db.progress_update(new_user, title_fake, episode)
+    assert len(db.progresses) == initial_len + 1
+    for progress in db.progresses:
+        assert progress.title != title_fake
+
+
+def test_progress_update_existed(data, initial_db):
+    db = initial_db
+    initial_len = len(db.progresses)
+    _, progress_data = data
+    user = progress_data[0]['user']
+    title = progress_data[0]['title']
+    new_episode = progress_data[0]['episode'] + 1
+
+    db.progress_update(user, title, new_episode)
+    assert len(db.progresses) == initial_len
+    progress_matched = db.progress_find(user, title)
+    the_progress = progress_matched[0]
+    assert the_progress.user == user
+    assert the_progress.title == title
+    assert the_progress.episode == new_episode

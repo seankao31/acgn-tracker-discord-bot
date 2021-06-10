@@ -22,6 +22,23 @@ class AcgnTrackerDatabase:
         # if db setup correctly then it should only have one element
         return [acgn for acgn in self.acgns if acgn.title == title]
 
+    def progress_update(self, user, title: str, episode):
+        acgn_matched = self.acgn_find(title)
+        if acgn_matched == []:
+            # no such title
+            return
+
+        # TODO: might check whether episode exceeds final_episode
+        # watch out non-integer episodes, can't expect int or even number?
+
+        progress_matched = self.progress_find(user, title)
+        if progress_matched == []:
+            new_progress = ProgressData(user, title, episode)
+            self.progresses.append(new_progress)
+        else:
+            the_progress = progress_matched[0]
+            the_progress.episode = episode
+
     def progress_find(self, user, title: str):
         if not self.progresses:
             return []
