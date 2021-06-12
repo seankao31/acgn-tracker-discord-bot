@@ -48,4 +48,4 @@ class AcgnTrackerDatabase:
             return []
         # if db setup correctly then it should only have one element
         return [progress for progress in self.progresses
-                if progress.user is user and progress.title is title]
+                if progress.user == user and progress.title == title]
