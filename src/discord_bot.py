@@ -34,12 +34,35 @@ async def progress_commands(ctx):
         await command_not_found(ctx)
 
 
-@progress_commands.command(name='list')
-async def progress_list(ctx):
+@progress_commands.command(name='list-all')
+async def progress_list_all(ctx):
     global db
     msgs = [f'There are {len(db.progresses)} progresses in the database.', '']
     for progress in db.progresses:
         msg = f'{progress.user}: {progress.title} ({progress.episode})'
+        msgs.append(msg)
+    await send_block_message(ctx, msgs)
+
+
+@progress_commands.command(name='list')
+async def progress_list(ctx):
+    global db
+    user = ctx.author
+    # list of (title, watched episode, final episode) tuple
+    user_progresses_extended = []
+    for progress in db.progresses:
+        if progress.user != user:
+            continue
+        acgn_matched = db.acgn_find(progress.title)
+        the_acgn = acgn_matched[0]
+        progress_extended = \
+            (progress.title, progress.episode, the_acgn.final_episode)
+        user_progresses_extended.append(progress_extended)
+    msgs = [f'You have {len(user_progresses_extended)} tracked progresses.',
+            '']
+    for progress_extended in user_progresses_extended:
+        msg = f'{progress_extended[0]}: {progress_extended[1]}' \
+              f' / {progress_extended[2]}'
         msgs.append(msg)
     await send_block_message(ctx, msgs)
 
