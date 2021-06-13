@@ -63,6 +63,9 @@ class AcgnTrackerDatabase:
             user: An identifier indicating the user.
             title: A string.
             episode: Number of the episode. Usually it's an integer.
+
+        Raises:
+            AcgnNotFound: Title doesn't exist in the database.
         """
         acgn_matched = self.acgn_find(title)
         if not acgn_matched:
