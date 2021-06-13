@@ -1,4 +1,5 @@
 from .acgn_data import AcgnData
+from .exceptions import AcgnNotFound
 from .progress_data import ProgressData
 
 
@@ -65,9 +66,7 @@ class AcgnTrackerDatabase:
         """
         acgn_matched = self.acgn_find(title)
         if not acgn_matched:
-            # no such title
-            # TODO: should raise exception
-            return
+            raise AcgnNotFound
 
         progress_matched = self.progress_find(user, title)
         if not progress_matched:

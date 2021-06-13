@@ -2,6 +2,7 @@ import pytest
 import random
 from src.acgn_data import AcgnData
 from src.acgn_tracker_database import AcgnTrackerDatabase
+from src.exceptions import AcgnNotFound
 from src.progress_data import ProgressData
 
 
@@ -167,8 +168,9 @@ def test_progress_update_add_new_in_empty_fail(random_progress):
     episode = random_progress['episode']
     db = AcgnTrackerDatabase()
 
-    db.progress_update(user, title, episode)
-    assert db.progresses == []
+    with pytest.raises(AcgnNotFound):
+        db.progress_update(user, title, episode)
+        assert db.progresses == []
 
 
 @pytest.mark.repeat(5)
@@ -179,7 +181,7 @@ def test_progress_update_add_new_in_nonempty(random_acgn, initial_db):
     title = random_acgn['title']
     episode = 1
 
-    # add new progress whose title already exist
+    # add new progress whose title already exist in acgn database
     db.progress_update(new_user, title, episode)
     assert len(db.progresses) == initial_len + 1
     the_progress = db.progresses[-1]
@@ -188,11 +190,12 @@ def test_progress_update_add_new_in_nonempty(random_acgn, initial_db):
     assert the_progress.episode == episode
 
     # add new progress with a new title. should fail
-    title_fake = 'xxx'
-    db.progress_update(new_user, title_fake, episode)
-    assert len(db.progresses) == initial_len + 1
-    for progress in db.progresses:
-        assert progress.title != title_fake
+    with pytest.raises(AcgnNotFound):
+        title_fake = 'xxx'
+        db.progress_update(new_user, title_fake, episode)
+        assert len(db.progresses) == initial_len + 1
+        for progress in db.progresses:
+            assert progress.title != title_fake
 
 
 @pytest.mark.repeat(5)
