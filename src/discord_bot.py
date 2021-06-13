@@ -160,8 +160,8 @@ async def send_block_message(ctx, msgs):
 
 
 async def no_subcommand_provided(ctx):
-    msg = f'A subcommand is needed. You can type `{COMMAND_PREFIX}' \
-            f'help {ctx.command}` for more info'
+    msg = (f'A subcommand is needed. You can type `{COMMAND_PREFIX}'
+           f'help {ctx.command}` for more info')
     await ctx.send(msg)
 
 
