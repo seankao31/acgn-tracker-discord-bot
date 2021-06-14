@@ -94,12 +94,8 @@ def test_acgn_find_in_db(random_acgn, initial_db):
 def test_acgn_update_add_new_in_empty(random_acgn):
     title = random_acgn['title']
     final_episode = random_acgn['final_episode']
-    print(AcgnTrackerDatabase().acgns)
     db = AcgnTrackerDatabase()
-    print(db.acgns)
     db.acgn_update(title, final_episode)
-    for acgn in db.acgns:
-        print(acgn.title)
     assert len(db.acgns) == 1
     the_acgn = db.acgns[0]
     assert the_acgn.title == title
