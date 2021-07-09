@@ -69,3 +69,21 @@ export const update = function (req, res) {
     });
   });
 };
+
+const delete_ = function (req, res) {
+  Acgn.findByIdAndDelete(req.params.acgnId, (err, acgn) => {
+    if (err) {
+      res.json({
+        status: 'error',
+        message: err
+      });
+      return;
+    }
+    res.json({
+      status: 'success',
+      message: 'Acgn deleted successfully',
+      data: acgn
+    });
+  });
+};
+export { delete_ as delete };

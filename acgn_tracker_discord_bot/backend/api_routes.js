@@ -18,5 +18,6 @@ router.route('/acgns')
 router.route('/acgns/:acgnId')
   .get(acgnController.view)
   .put(acgnController.update)
+  .delete(acgnController.delete)
 
 export default router;

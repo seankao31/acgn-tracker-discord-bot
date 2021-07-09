@@ -10,8 +10,13 @@ app.use(express.urlencoded({
 }));
 app.use(express.json());
 
+// Deprecations: https://mongoosejs.com/docs/deprecations.html
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+
 let mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/acgn_tracker';
-mongoose.connect(mongodbUri, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(mongodbUri);
 let db = mongoose.connection;
 if (!db)
     console.log('Error connecting db');
