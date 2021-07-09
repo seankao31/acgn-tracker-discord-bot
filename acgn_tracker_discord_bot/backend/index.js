@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 
 import apiRoutes from './api_routes.js';
 
-
 let app = express();
 
 app.use(express.urlencoded({
@@ -14,10 +13,10 @@ app.use(express.json());
 let mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/acgn_tracker';
 mongoose.connect(mongodbUri, {useNewUrlParser: true, useUnifiedTopology: true});
 let db = mongoose.connection;
-if(!db)
-    console.log("Error connecting db");
+if (!db)
+    console.log('Error connecting db');
 else
-    console.log("Db connected successfully");
+    console.log('Db connected successfully');
 
 let port = process.env.PORT || 8080;
 app.get('/', (req, res) => res.send('Hello World Express'));

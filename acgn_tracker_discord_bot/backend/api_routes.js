@@ -1,5 +1,7 @@
 import express from 'express'
 
+import * as acgnController from './acgnController.js'
+
 let router = express.Router()
 
 router.get('/', (req, res) => {
@@ -8,5 +10,8 @@ router.get('/', (req, res) => {
     message: 'Welcome to Acgn Tracker!'
   });
 });
+
+router.route('/acgns')
+  .get(acgnController.index)
 
 export default router;
