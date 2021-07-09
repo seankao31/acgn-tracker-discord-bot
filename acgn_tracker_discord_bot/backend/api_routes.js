@@ -15,4 +15,7 @@ router.route('/acgns')
   .get(acgnController.index)
   .post(acgnController.create)
 
+router.route('/acgns/:acgnId')
+  .get(acgnController.view)
+
 export default router;
