@@ -13,5 +13,6 @@ router.get('/', (req, res) => {
 
 router.route('/acgns')
   .get(acgnController.index)
+  .post(acgnController.create)
 
 export default router;
