@@ -2,6 +2,7 @@
   "name": "acgn-tracker-backend",
   "version": "0.1.0",
   "description": "A virtual bookmark service to keep track of where you left off for all those animes, comics, novels, drama, TV shows, and more!",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
