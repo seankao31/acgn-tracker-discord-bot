@@ -18,9 +18,7 @@ export const index = function (req, res) {
 };
 
 export const create = function (req, res) {
-  let acgn = new Acgn();
-  acgn.title = req.body.title;
-  acgn.final_episode = req.body.final_episode;
+  let acgn = new Acgn(req.body);
 
   acgn.save((err) => {
     if (err) {

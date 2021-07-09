@@ -9,6 +9,8 @@ let acgnSchema = mongoose.Schema({
     type: String,
     required: true
   }
+}, {
+  strict: 'throw'  // throws StrictModeError if additional field is provided
 });
 
 let Acgn = mongoose.model('acgn', acgnSchema);
