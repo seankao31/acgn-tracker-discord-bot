@@ -1,3 +1,5 @@
+from pymongo import MongoClient
+
 from .acgn_data import AcgnData
 from .exceptions import AcgnNotFound
 from .progress_data import ProgressData
@@ -10,19 +12,34 @@ class AcgnTrackerDatabase:
         acgns: A list of AcgnData of tracked acgns.
         progresses: A list of ProgressData of tracked progresses.
     """
-    def __init__(self, acgns=None, progresses=None):
+    def __init__(self, db=None, acgns=None, progresses=None):
         """Inits the database.
 
         Args:
+            mongoclient: Optional; A MongoClient.
             acgns: Optional; A list of AcgnData.
             progresses: Optional; A list of ProgressData.
         """
-        if acgns is None:
-            acgns = []
-        if progresses is None:
-            progresses = []
-        self.acgns = acgns
-        self.progresses = progresses
+        if db is None:
+            db = MongoClient().acgn_tracker
+        self.db = db
+        self.db.acgns.drop()
+        if acgns is not None:
+            self.db.acgns.insert_many([acgn.__dict__ for acgn in acgns])
+        self.db.progresses.drop()
+        if progresses is not None:
+            self.db.progresses.insert_many([progress.__dict__
+                                            for progress in progresses])
+
+    def acgn_count(self):
+        """Returns number of acgns in the database."""
+        return self.db.acgns.count_documents({})
+
+    def acgn_list(self):
+        """Returns all acgns in the database."""
+        return [AcgnData(title=acgn['title'],
+                         final_episode=acgn['final_episode'])
+                for acgn in self.db.acgns.find({})]
 
     def acgn_update(self, title: str, final_episode):
         """Adds or updates an acgn in the database.
@@ -34,13 +51,9 @@ class AcgnTrackerDatabase:
             title: A string.
             final_episode: Number of final episode. Usually it's an integer.
         """
-        acgn_matched = self.acgn_find(title)
-        if acgn_matched:
-            the_acgn = acgn_matched[0]
-            the_acgn.final_episode = final_episode
-        else:
-            new_acgn = AcgnData(title, final_episode)
-            self.acgns.append(new_acgn)
+        self.db.acgns.update_one({'title': title},
+                                 {'$set': {'final_episode': final_episode}},
+                                 upsert=True)
 
     def acgn_find(self, title: str):
         """Returns list of AcgnData that match the given title.
@@ -48,10 +61,23 @@ class AcgnTrackerDatabase:
         Args:
             title: A string.
         """
-        if not self.acgns:
-            return []
         # if db setup correctly then it should only have one element
-        return [acgn for acgn in self.acgns if acgn.title == title]
+        acgns = self.db.acgns.find({'title': title})
+        acgns = [AcgnData(title=acgn['title'],
+                          final_episode=acgn['final_episode'])
+                 for acgn in acgns]
+        return acgns
+
+    def progress_count(self):
+        """Returns number of progresses in the database."""
+        return self.db.progresses.count_documents({})
+
+    def progress_list(self):
+        """Returns all progresses in the database."""
+        return [ProgressData(user=progress['user'],
+                             title=progress['title'],
+                             episode=progress['episode'])
+                for progress in self.db.progresses.find({})]
 
     def progress_update(self, user, title: str, episode):
         """Adds or updates a progress in the database.
@@ -71,13 +97,9 @@ class AcgnTrackerDatabase:
         if not acgn_matched:
             raise AcgnNotFound
 
-        progress_matched = self.progress_find(user, title)
-        if not progress_matched:
-            new_progress = ProgressData(user, title, episode)
-            self.progresses.append(new_progress)
-        else:
-            the_progress = progress_matched[0]
-            the_progress.episode = episode
+        self.db.progresses.update_one({'user': user, 'title': title},
+                                      {'$set': {'episode': episode}},
+                                      upsert=True)
 
     def progress_find(self, user, title: str):
         """Returns list of ProgressData that match the given user and title.
@@ -86,8 +108,10 @@ class AcgnTrackerDatabase:
             user: An identifier indicating the user.
             title: A string.
         """
-        if not self.progresses:
-            return []
         # if db setup correctly then it should only have one element
-        return [progress for progress in self.progresses
-                if progress.user == user and progress.title == title]
+        progresses = self.db.progresses.find({'user': user, 'title': title})
+        progresses = [ProgressData(user=progress['user'],
+                                   title=progress['title'],
+                                   episode=progress['episode'])
+                      for progress in progresses]
+        return progresses

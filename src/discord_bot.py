@@ -54,11 +54,12 @@ async def acgn_commands(ctx):
                        help=ACGN_LIST_HELP)
 async def acgn_list(ctx):
     global db
-    msgs = [f'There are {len(db.acgns)} acgns in the database.\n']
-    if db.acgns:
+    n_acgn = db.acgn_count()
+    msgs = [f'There are {n_acgn} acgns in the database.\n']
+    if n_acgn != 0:
         header = header_message('Title (Final Episode)')
         msgs.append(header)
-    for acgn in db.acgns:
+    for acgn in db.acgn_list():
         msg = f'{acgn.title} ({acgn.final_episode})'
         msgs.append(msg)
     await send_block_message(ctx, msgs)
@@ -87,11 +88,12 @@ async def progress_commands(ctx):
                            help=PROGRESS_LIST_ALL_HELP)
 async def progress_list_all(ctx):
     global db
-    msgs = [f'There are {len(db.progresses)} progresses in the database.\n']
-    if db.progresses:
+    n_progresses = db.progress_count()
+    msgs = [f'There are {n_progresses} progresses in the database.\n']
+    if n_progresses != 0:
         header = header_message('User: Title (Episode)')
         msgs.append(header)
-    for progress in db.progresses:
+    for progress in db.progress_list():
         msg = f'{progress.user}: {progress.title} ({progress.episode})'
         msgs.append(msg)
     await send_block_message(ctx, msgs)
@@ -104,10 +106,10 @@ async def progress_list(ctx):
     global db
 
     # Collect progresses of the sender.
-    user = ctx.author
+    user = str(ctx.author)
     # list of (title, watched episode, final episode) tuple
     user_progresses_extended = []
-    for progress in db.progresses:
+    for progress in db.progress_list():
         if progress.user != user:
             continue
         acgn_matched = db.acgn_find(progress.title)
@@ -134,7 +136,7 @@ async def progress_list(ctx):
 async def progress_update(ctx, title, episode):
     global db
     try:
-        db.progress_update(ctx.author, title, episode)
+        db.progress_update(str(ctx.author), title, episode)
         await ctx.send('Update Success.')
     except AcgnNotFound:
         await ctx.send(f'There\'s no *{title}* in the acgn database.\n'

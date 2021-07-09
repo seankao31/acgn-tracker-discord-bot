@@ -71,14 +71,14 @@ def initial_db(data):
         progresses.append(ProgressData(
             progress['user'], progress['title'], progress['episode']))
 
-    return AcgnTrackerDatabase(acgns, progresses)
+    return AcgnTrackerDatabase(acgns=acgns, progresses=progresses)
 
 
 def test_acgn_find_not_in_db(initial_db):
     fake_acgn_title = 'xxx'
+    assert initial_db.acgn_find(fake_acgn_title) == []
     empty_db = AcgnTrackerDatabase()
     assert empty_db.acgn_find(fake_acgn_title) == []
-    assert initial_db.acgn_find(fake_acgn_title) == []
 
 
 @pytest.mark.repeat(5)
@@ -96,34 +96,31 @@ def test_acgn_update_add_new_in_empty(random_acgn):
     final_episode = random_acgn['final_episode']
     db = AcgnTrackerDatabase()
     db.acgn_update(title, final_episode)
-    assert len(db.acgns) == 1
-    the_acgn = db.acgns[0]
-    assert the_acgn.title == title
-    assert the_acgn.final_episode == final_episode
+    assert db.db.acgns.count_documents({}) == 1
+    assert db.db.acgns.find(random_acgn)
 
 
 def test_acgn_update_add_new_in_nonempty(initial_db):
     db = initial_db
-    initial_len = len(db.acgns)
+    initial_len = db.db.acgns.count_documents({})
     new_title = 'xxx'
     new_final_episode = 100
+    new_acgn = AcgnData(new_title, new_final_episode)
 
     db.acgn_update(new_title, new_final_episode)
-    assert len(db.acgns) == initial_len + 1
-    the_acgn = db.acgns[-1]
-    assert the_acgn.title == new_title
-    assert the_acgn.final_episode == new_final_episode
+    assert db.db.acgns.count_documents({}) == initial_len + 1
+    assert db.db.acgns.find(new_acgn.__dict__)
 
 
 @pytest.mark.repeat(5)
 def test_acgn_update_existed(random_acgn, initial_db):
     db = initial_db
-    initial_len = len(db.acgns)
+    initial_len = db.db.acgns.count_documents({})
     title = random_acgn['title']
     new_final_episode = random_acgn['final_episode'] + 10
 
     db.acgn_update(title, new_final_episode)
-    assert len(db.acgns) == initial_len
+    assert db.db.acgns.count_documents({}) == initial_len
     acgn_matched = db.acgn_find(title)
     the_acgn = acgn_matched[0]
     assert the_acgn.title == title
@@ -136,12 +133,12 @@ def test_progress_find_not_in_db(random_progress, initial_db):
     title_true = random_progress['title']
     user_false = 1000
     title_false = 'xxx'
-    empty_db = AcgnTrackerDatabase()
-    assert empty_db.progress_find(user_false, title_false) == []
 
     assert initial_db.progress_find(user_false, title_false) == []
     assert initial_db.progress_find(user_true, title_false) == []
     assert initial_db.progress_find(user_false, title_true) == []
+    empty_db = AcgnTrackerDatabase()
+    assert empty_db.progress_find(user_false, title_false) == []
 
 
 @pytest.mark.repeat(5)
@@ -166,44 +163,58 @@ def test_progress_update_add_new_in_empty_fail(random_progress):
 
     with pytest.raises(AcgnNotFound):
         db.progress_update(user, title, episode)
-        assert db.progresses == []
+        assert db.db.progresses.count_documents({}) == 0
+
+
+@pytest.mark.repeat(5)
+def test_progress_update_add_new_in_empty_progress(random_acgn):
+    title = random_acgn['title']
+    final_episode = random_acgn['final_episode']
+    db = AcgnTrackerDatabase()
+    db.acgn_update(title, final_episode)
+
+    user = '888'
+    episode = 1
+    new_progress = ProgressData(user, title, episode)
+
+    db.progress_update(user, title, episode)
+    assert db.db.progresses.count_documents({}) == 1
+    assert db.db.progresses.find_one(new_progress.__dict__)
 
 
 @pytest.mark.repeat(5)
 def test_progress_update_add_new_in_nonempty(random_acgn, initial_db):
     db = initial_db
-    initial_len = len(db.progresses)
+    initial_len = db.db.progresses.count_documents({})
     new_user = 777
     title = random_acgn['title']
     episode = 1
+    new_progress = ProgressData(new_user, title, episode)
 
     # add new progress whose title already exist in acgn database
     db.progress_update(new_user, title, episode)
-    assert len(db.progresses) == initial_len + 1
-    the_progress = db.progresses[-1]
-    assert the_progress.user == new_user
-    assert the_progress.title == title
-    assert the_progress.episode == episode
+    assert db.db.progresses.count_documents({}) == initial_len + 1
+    assert db.db.progresses.find_one(new_progress.__dict__)
 
     # add new progress with a new title. should fail
     with pytest.raises(AcgnNotFound):
         title_fake = 'xxx'
+        fake_progress = ProgressData(new_user, title_fake, episode)
         db.progress_update(new_user, title_fake, episode)
-        assert len(db.progresses) == initial_len + 1
-        for progress in db.progresses:
-            assert progress.title != title_fake
+        assert db.db.progresses.count_documents({}) == initial_len + 1
+        assert db.db.progresses.find_one(fake_progress.__dict__) is None
 
 
 @pytest.mark.repeat(5)
 def test_progress_update_existed(random_progress, initial_db):
     db = initial_db
-    initial_len = len(db.progresses)
+    initial_len = db.db.progresses.count_documents({})
     user = random_progress['user']
     title = random_progress['title']
     new_episode = random_progress['episode'] + 1
 
     db.progress_update(user, title, new_episode)
-    assert len(db.progresses) == initial_len
+    assert db.db.progresses.count_documents({}) == initial_len
     progress_matched = db.progress_find(user, title)
     the_progress = progress_matched[0]
     assert the_progress.user == user
