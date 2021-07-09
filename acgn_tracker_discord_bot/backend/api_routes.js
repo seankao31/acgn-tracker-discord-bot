@@ -17,5 +17,6 @@ router.route('/acgns')
 
 router.route('/acgns/:acgnId')
   .get(acgnController.view)
+  .put(acgnController.update)
 
 export default router;

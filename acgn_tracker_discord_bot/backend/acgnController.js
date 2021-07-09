@@ -52,3 +52,20 @@ export const view = function (req, res) {
     });
   });
 };
+
+export const update = function (req, res) {
+  Acgn.findByIdAndUpdate(req.params.acgnId, req.body, (err, acgn) => {
+    if (err) {
+      res.json({
+        status: 'error',
+        message: err
+      });
+      return;
+    };
+    res.json({
+      status: 'success',
+      message: 'Acgn updated successfully',
+      data: acgn  // default: document before update
+    });
+  });
+};
