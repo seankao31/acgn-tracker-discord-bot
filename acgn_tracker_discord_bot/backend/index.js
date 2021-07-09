@@ -1,12 +1,28 @@
 import express from 'express';
+import mongoose from 'mongoose';
 
-import api_routes from './api_routes.js';
+import apiRoutes from './api_routes.js';
 
 
 let app = express();
-var port = process.env.PORT || 8080;
 
-app.get('/', (req, res) => res.send("Hello World Express"))
-app.use('/api', api_routes)
+app.use(express.urlencoded({
+  extended: true
+}));
+app.use(express.json());
 
-app.listen(port, () => console.log("Running Acgn Tracker Backend on port " + port))
+let mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/acgn_tracker';
+mongoose.connect(mongodbUri, {useNewUrlParser: true, useUnifiedTopology: true});
+let db = mongoose.connection;
+if(!db)
+    console.log("Error connecting db");
+else
+    console.log("Db connected successfully");
+
+let port = process.env.PORT || 8080;
+app.get('/', (req, res) => res.send('Hello World Express'));
+app.use('/api', apiRoutes);
+
+app.listen(port, () => {
+  console.log('Running Acgn Tracker Backend on port ' + port);
+});
