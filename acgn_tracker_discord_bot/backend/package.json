@@ -5,6 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index",
+    "server": "nodemon src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yi-Hsiang Kao",

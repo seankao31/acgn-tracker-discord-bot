@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 let acgnSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   final_episode: {
     type: String,
