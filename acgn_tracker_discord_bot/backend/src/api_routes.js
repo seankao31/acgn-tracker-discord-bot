@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 });
 
 router.route('/acgns')
-  .get(acgnController.index)
+  .get(acgnController.index)  // also accepts query: title
   .post(acgnController.create)
 
 router.route('/acgns/:acgnId')
@@ -30,6 +30,9 @@ router.route('/users/:userId')
   .get(userController.view)
   .put(userController.update)
   .delete(userController.delete)
+
+router.route('/users/:userId/progresses')
+  .get(progressController.findByUser)  // also accepts query: title
 
 router.route('/progresses')
   .get(progressController.index)

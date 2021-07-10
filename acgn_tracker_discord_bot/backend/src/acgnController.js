@@ -44,9 +44,9 @@ function search(req, res) {
   Acgn.find({
     $text: {$search: req.query.title}
   }, {
-    "title_search_score" : {"$meta" : "textScore"}
+    title_search_score: {$meta : 'textScore'}
   })
-    .sort({"title_search_score": {"$meta": "textScore"}})
+    .sort({title_search_score: {$meta: 'textScore'}})
     .exec((err, acgns) => {
       if (err) {
         res.json({
