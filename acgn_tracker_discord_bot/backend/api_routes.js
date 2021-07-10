@@ -1,6 +1,7 @@
 import express from 'express'
 
 import * as acgnController from './acgnController.js'
+import * as progressController from './progressController.js'
 
 let router = express.Router()
 
@@ -19,5 +20,14 @@ router.route('/acgns/:acgnId')
   .get(acgnController.view)
   .put(acgnController.update)
   .delete(acgnController.delete)
+
+router.route('/progresses')
+  .get(progressController.index)
+  .post(progressController.create)
+
+router.route('/progresses/:progressId')
+  .get(progressController.view)
+  .put(progressController.update)
+  .delete(progressController.delete)
 
 export default router;
