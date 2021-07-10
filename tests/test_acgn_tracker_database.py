@@ -1,9 +1,9 @@
 import pytest
 import random
-from src.acgn_data import AcgnData
-from src.acgn_tracker_database import AcgnTrackerDatabase
-from src.exceptions import AcgnNotFound
-from src.progress_data import ProgressData
+from acgn_tracker_discord_bot.acgn_data import AcgnData
+from acgn_tracker_discord_bot.acgn_tracker_database import AcgnTrackerDatabase
+from acgn_tracker_discord_bot.exceptions import AcgnNotFound
+from acgn_tracker_discord_bot.progress_data import ProgressData
 
 
 @pytest.fixture
