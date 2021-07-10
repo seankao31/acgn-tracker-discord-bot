@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 
 let progressSchema = mongoose.Schema({
-  user: {
-    type: String,
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
     required: true,
     index: true
   },
@@ -25,4 +26,4 @@ Progress.get = function (callback, limit) {
   Progress.find(callback).limit(limit);
 };
 
-export default Progress
+export default Progress;

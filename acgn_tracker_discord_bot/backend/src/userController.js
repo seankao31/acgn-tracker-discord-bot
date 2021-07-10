@@ -1,7 +1,7 @@
-import Progress from './progressModel.js';
+import User from './userModel.js';
 
 export const index = function (req, res) {
-  Progress.get((err, progresses) => {
+  User.get((err, users) => {
     if (err) {
       res.json({
         status: 'error',
@@ -11,16 +11,16 @@ export const index = function (req, res) {
     }
     res.json({
       status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progresses
+      message: 'User retrieved successfully',
+      data: users
     });
   });
 };
 
 export const create = function (req, res) {
-  let progress = new Progress(req.body);
+  let user = new User(req.body);
 
-  progress.save((err) => {
+  user.save((err) => {
     if (err) {
       res.json({
         status: 'error',
@@ -30,14 +30,14 @@ export const create = function (req, res) {
     }
     res.json({
       status: 'success',
-      message: 'New progress created',
-      data: progress
+      message: 'New user created',
+      data: user
     });
   });
 };
 
 export const view = function (req, res) {
-  Progress.findById(req.params.progressId, (err, progress) => {
+  User.findById(req.params.userId, (err, user) => {
     if (err) {
       res.json({
         status: 'error',
@@ -47,14 +47,14 @@ export const view = function (req, res) {
     }
     res.json({
       status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progress
+      message: 'User retrieved successfully',
+      data: user
     });
   });
 };
 
 export const update = function (req, res) {
-  Progress.findByIdAndUpdate(req.params.progressId, req.body, (err, progress) => {
+  User.findByIdAndUpdate(req.params.userId, req.body, (err, user) => {
     if (err) {
       res.json({
         status: 'error',
@@ -64,14 +64,14 @@ export const update = function (req, res) {
     };
     res.json({
       status: 'success',
-      message: 'Progress updated successfully',
-      data: progress  // default: document before update
+      message: 'User updated successfully',
+      data: user  // default: document before update
     });
   });
 };
 
 const delete_ = function (req, res) {
-  Progress.findByIdAndDelete(req.params.progressId, (err, progress) => {
+  User.findByIdAndDelete(req.params.userId, (err, user) => {
     if (err) {
       res.json({
         status: 'error',
@@ -81,8 +81,8 @@ const delete_ = function (req, res) {
     }
     res.json({
       status: 'success',
-      message: 'Progress deleted successfully',
-      data: progress
+      message: 'User deleted successfully',
+      data: user
     });
   });
 };

@@ -20,4 +20,4 @@ Acgn.get = function (callback, limit) {
   Acgn.find(callback).limit(limit);
 };
 
-export default Acgn
+export default Acgn;
