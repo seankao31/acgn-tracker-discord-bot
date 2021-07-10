@@ -1,4 +1,4 @@
-import Acgn from './acgnModel.js';
+import Acgn from './acgn_model.js';
 
 export const index = function (req, res) {
   if (req.query.title) {

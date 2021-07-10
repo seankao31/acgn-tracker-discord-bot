@@ -1,4 +1,4 @@
-import User from './userModel.js';
+import User from './user_model.js';
 
 export const index = function (req, res) {
   User.get((err, users) => {

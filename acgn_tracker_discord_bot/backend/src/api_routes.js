@@ -1,8 +1,8 @@
 import express from 'express'
 
-import * as acgnController from './acgnController.js'
-import * as userController from './userController.js'
-import * as progressController from './progressController.js'
+import * as acgnController from './acgn_controller.js'
+import * as userController from './user_controller.js'
+import * as progressController from './progress_controller.js'
 
 let router = express.Router()
 

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import Acgn from './acgnModel.js';
-import Progress from './progressModel.js';
+import Acgn from './acgn_model.js';
+import Progress from './progress_model.js';
 
 export const index = function (req, res) {
   Progress.get((err, progresses) => {
