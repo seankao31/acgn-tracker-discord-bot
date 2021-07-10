@@ -4,6 +4,7 @@ let acgnSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
+    index: 'text',
     unique: true
   },
   final_episode: {

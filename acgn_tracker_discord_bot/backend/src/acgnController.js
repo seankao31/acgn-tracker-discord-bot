@@ -1,6 +1,10 @@
 import Acgn from './acgnModel.js';
 
 export const index = function (req, res) {
+  if (req.query.title) {
+    search(req, res);
+    return;
+  }
   Acgn.get((err, acgns) => {
     if (err) {
       res.json({
@@ -34,6 +38,29 @@ export const create = function (req, res) {
       data: acgn
     });
   });
+};
+
+function search(req, res) {
+  Acgn.find({
+    $text: {$search: req.query.title}
+  }, {
+    "title_search_score" : {"$meta" : "textScore"}
+  })
+    .sort({"title_search_score": {"$meta": "textScore"}})
+    .exec((err, acgns) => {
+      if (err) {
+        res.json({
+          status: 'error',
+          message: err
+        });
+        return;
+      }
+      res.json({
+        status: 'success',
+        message: 'Acgn retrieved successfully',
+        data: acgns
+      });
+    });
 };
 
 export const view = function (req, res) {
