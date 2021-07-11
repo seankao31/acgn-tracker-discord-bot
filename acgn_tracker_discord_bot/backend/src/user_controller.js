@@ -1,6 +1,10 @@
 import User from './user_model.js';
 
 export const index = function (req, res) {
+  if (req.query.discord_id) {
+    search(req, res);
+    return;
+  }
   User.get((err, users) => {
     if (err) {
       res.json({
@@ -13,6 +17,23 @@ export const index = function (req, res) {
       status: 'success',
       message: 'User retrieved successfully',
       data: users
+    });
+  });
+};
+
+function search(req, res) {
+  User.findOne(req.query, (err, user) => {
+    if (err) {
+      res.json({
+        status: 'error',
+        message: err
+      });
+      return;
+    }
+    res.json({
+      status: 'success',
+      message: 'User retrieved successfully',
+      data: user
     });
   });
 };

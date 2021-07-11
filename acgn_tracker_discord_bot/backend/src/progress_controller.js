@@ -21,6 +21,10 @@ export const index = function (req, res) {
 };
 
 export const findByUser = function(req, res) {
+  if (req.query.acgnId) {
+    findByUserAndAcgn(req, res);
+    return;
+  }
   if (req.query.title) {
     findByUserAndTitle(req, res);
     return;
@@ -39,6 +43,26 @@ export const findByUser = function(req, res) {
       status: 'success',
       message: 'Progress retrieved successfully',
       data: progresses
+    });
+  });
+};
+
+function findByUserAndAcgn(req, res) {
+  Progress.findOne({
+    user_id: req.params.userId,
+    acgn_id: req.query.acgnId
+  }, (err, progress) => {
+    if (err) {
+      res.json({
+        status: 'error',
+        message: err
+      });
+      return;
+    }
+    res.json({
+      status: 'success',
+      message: 'Progress retrieved successfully',
+      data: progress
     });
   });
 };
