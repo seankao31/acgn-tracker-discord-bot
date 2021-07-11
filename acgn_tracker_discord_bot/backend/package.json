@@ -1,0 +1,18 @@
+{
+  "name": "acgn-tracker-backend",
+  "version": "0.1.0",
+  "description": "A virtual bookmark service to keep track of where you left off for all those animes, comics, novels, drama, TV shows, and more!",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index",
+    "server": "nodemon src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yi-Hsiang Kao",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.13.2"
+  }
+}
