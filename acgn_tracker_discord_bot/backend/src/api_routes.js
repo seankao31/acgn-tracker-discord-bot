@@ -32,7 +32,7 @@ router.route('/users/:userId')
   .delete(userController.delete)
 
 router.route('/users/:userId/progresses')
-  .get(progressController.findByUser)  // also accepts query: title
+  .get(progressController.findByUser)  // also accepts query: acgnId or title
 
 router.route('/progresses')
   .get(progressController.index)

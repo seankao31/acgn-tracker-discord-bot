@@ -14,6 +14,7 @@ app.use(express.json());
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);  // THIS. with this my compound unique index finally works
 
 let mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/acgn_tracker';
 mongoose.connect(mongodbUri);

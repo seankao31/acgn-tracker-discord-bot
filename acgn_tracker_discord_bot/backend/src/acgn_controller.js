@@ -7,17 +7,10 @@ export const index = function (req, res) {
   }
   Acgn.get((err, acgns) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Acgn retrieved successfully',
-      data: acgns
-    });
+    res.status(200).send(acgns);
   });
 };
 
@@ -26,17 +19,10 @@ export const create = function (req, res) {
 
   acgn.save((err) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'New acgn created',
-      data: acgn
-    });
+    res.status(200).send(acgn);
   });
 };
 
@@ -49,10 +35,7 @@ function search(req, res) {
     .sort({title_search_score: {$meta: 'textScore'}})
     .exec((err, acgns) => {
       if (err) {
-        res.json({
-          status: 'error',
-          message: err
-        });
+        res.status(400).send(err);
         return;
       }
       res.json({
@@ -66,10 +49,7 @@ function search(req, res) {
 export const view = function (req, res) {
   Acgn.findById(req.params.acgnId, (err, acgn) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
     res.json({
@@ -83,10 +63,7 @@ export const view = function (req, res) {
 export const update = function (req, res) {
   Acgn.findByIdAndUpdate(req.params.acgnId, req.body, (err, acgn) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     };
     res.json({
@@ -100,17 +77,10 @@ export const update = function (req, res) {
 const delete_ = function (req, res) {
   Acgn.findByIdAndDelete(req.params.acgnId, (err, acgn) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Acgn deleted successfully',
-      data: acgn
-    });
+    res.status(200).send(acgn);
   });
 };
 export { delete_ as delete };

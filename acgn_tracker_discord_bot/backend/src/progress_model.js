@@ -19,7 +19,7 @@ let progressSchema = mongoose.Schema({
 }, {
   strict: 'throw'  // throws StrictModeError if additional field is provided
 });
-progressSchema.index({user: 1, acgn_id: 1}, {unique: true});
+progressSchema.index({user_id: 1, acgn_id: 1}, {unique: true});
 
 let Progress = mongoose.model('progress', progressSchema);
 Progress.get = function (callback, limit) {

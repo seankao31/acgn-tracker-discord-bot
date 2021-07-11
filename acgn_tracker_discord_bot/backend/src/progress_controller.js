@@ -6,17 +6,10 @@ import Progress from './progress_model.js';
 export const index = function (req, res) {
   Progress.get((err, progresses) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progresses
-    });
+    res.status(200).send(progresses);
   });
 };
 
@@ -29,17 +22,10 @@ export const findByUser = function(req, res) {
     user_id: mongoose.Types.ObjectId(req.params.userId)
   }, (err, progresses) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progresses
-    });
+    res.status(200).send(progresses);
   });
 };
 
@@ -90,17 +76,10 @@ function findByUserAndTitle(req, res) {
     }
   }], (err, progresses) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progresses
-    });
+    res.status(200).send(progresses);
   });
 };
 
@@ -109,68 +88,40 @@ export const create = function (req, res) {
 
   progress.save((err) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'New progress created',
-      data: progress
-    });
+    res.status(200).send(progress);
   });
 };
 
 export const view = function (req, res) {
   Progress.findById(req.params.progressId, (err, progress) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Progress retrieved successfully',
-      data: progress
-    });
+    res.status(200).send(progress);
   });
 };
 
 export const update = function (req, res) {
   Progress.findByIdAndUpdate(req.params.progressId, req.body, (err, progress) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     };
-    res.json({
-      status: 'success',
-      message: 'Progress updated successfully',
-      data: progress  // default: document before update
-    });
+    res.status(200).send(progress);
   });
 };
 
 const delete_ = function (req, res) {
   Progress.findByIdAndDelete(req.params.progressId, (err, progress) => {
     if (err) {
-      res.json({
-        status: 'error',
-        message: err
-      });
+      res.status(400).send(err);
       return;
     }
-    res.json({
-      status: 'success',
-      message: 'Progress deleted successfully',
-      data: progress
-    });
+    res.status(200).send(progress);
   });
 };
 export { delete_ as delete };
