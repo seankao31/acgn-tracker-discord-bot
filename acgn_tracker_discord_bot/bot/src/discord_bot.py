@@ -86,10 +86,13 @@ async def acgn_commands(ctx):
 async def acgn_list(ctx):
     url = service_url + '/acgns'
     response = requests.get(url=url)
-    if response.status_code != 200:
-        await backend_error(ctx)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
         return
-    data = response.json().get('data')
+    if response.status_code != 200:
+        await backend_error(ctx, response)
+        return
+    data = response.json()
     await send_acgns_message(ctx, data)
 
 
@@ -102,10 +105,13 @@ async def acgn_search(ctx, title):
         'title': title
     }
     response = requests.get(url=url, params=params)
-    if response.status_code != 200:
-        await backend_error(ctx)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
         return
-    data = response.json().get('data')
+    if response.status_code != 200:
+        await backend_error(ctx, response)
+        return
+    data = response.json()
     await send_acgns_message(ctx, data)
 
 
@@ -119,8 +125,11 @@ async def acgn_add(ctx, title, final_episode):
         'final_episode': str(final_episode)
     }
     response = requests.post(url=url, data=data)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return
     await ctx.send('Add Success.')
 
@@ -134,8 +143,11 @@ async def acgn_update(ctx, acgn_id, final_episode):
         'final_episode': str(final_episode)
     }
     response = requests.put(url=url, data=data)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return
     await ctx.send('Update Success.')
 
@@ -146,10 +158,13 @@ async def user_search(ctx):
         'discord_id': ctx.author.id
     }
     response = requests.get(url=url, params=params)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return None, -1
-    return response.json().get('data'), 0
+    return response.json(), 0
 
 
 async def user_add(ctx):
@@ -159,10 +174,13 @@ async def user_add(ctx):
     }
     url = service_url + '/users'
     response = requests.post(url=url, data=data)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return None, -1
-    return response.json().get('data'), 0
+    return response.json(), 0
 
 
 async def user_get_id(ctx):
@@ -193,10 +211,13 @@ async def progress_commands(ctx):
 async def progress_list_all(ctx):
     url = service_url + '/progresses'
     response = requests.get(url=url)
-    if response.status_code != 200:
-        await backend_error(ctx)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
         return
-    data = response.json().get('data')
+    if response.status_code != 200:
+        await backend_error(ctx, response)
+        return
+    data = response.json()
     await send_progresses_message(ctx, data)
 
 
@@ -210,10 +231,13 @@ async def progress_list_by_user(ctx):
     # Find progresses for user_id
     url = service_url + '/users/' + str(user_id) + '/progresses'
     response = requests.get(url=url)
-    if response.status_code != 200:
-        await backend_error(ctx)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
         return
-    data = response.json().get('data')
+    if response.status_code != 200:
+        await backend_error(ctx, response)
+        return
+    data = response.json()
     await send_progresses_message(ctx, data)
 
 
@@ -232,8 +256,11 @@ async def progress_add(ctx, acgn_id, episode):
         'episode': str(episode)
     }
     response = requests.post(url=url, data=data)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return
     await ctx.send('Add Success.')
 
@@ -250,10 +277,13 @@ async def progress_find_id(ctx, acgn_id):
         'acgn_id': acgn_id
     }
     response = requests.get(url=url, params=params)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return None, -1
-    data = response.json().get('data')
+    data = response.json()
     return data.get('_id'), 0
 
 
@@ -270,8 +300,11 @@ async def progress_update(ctx, acgn_id, episode):
         'episode': episode
     }
     response = requests.put(url=url, data=data)
+    if response.status_code == 400:
+        await bad_request(ctx, response)
+        return
     if response.status_code != 200:
-        await backend_error(ctx)
+        await backend_error(ctx, response)
         return
     await ctx.send('Update Success.')
 
@@ -316,8 +349,18 @@ async def send_progresses_message(ctx, data):
     await send_block_message(ctx, msgs)
 
 
-async def backend_error(ctx):
-    await ctx.send('Backend service error.')
+async def backend_error(ctx, response):
+    await ctx.send('Internal Service Error')
+    message = response.json().get('message')
+    if message:
+        await ctx.send(message)
+
+
+async def bad_request(ctx, response):
+    await ctx.send('Bad Request')
+    message = response.json().get('message')
+    if message:
+        await ctx.send(message)
 
 
 async def no_subcommand_provided(ctx):
