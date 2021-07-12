@@ -23,7 +23,7 @@ router.route('/acgns/:acgnId')
   .delete(acgnController.delete)
 
 router.route('/users')
-  .get(userController.index)
+  .get(userController.index)  // also accepts query: discord_id
   .post(userController.create)
 
 router.route('/users/:userId')
