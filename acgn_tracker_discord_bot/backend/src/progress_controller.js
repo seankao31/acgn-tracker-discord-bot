@@ -18,9 +18,13 @@ export const findByUser = function(req, res) {
     findByUserAndTitle(req, res);
     return;
   }
-  Progress.find({
+  let match = {
     user_id: mongoose.Types.ObjectId(req.params.userId)
-  }, (err, progresses) => {
+  }
+  if (req.query.acgn_id) {
+    match['acgn_id'] = mongoose.Types.ObjectId(req.query.acgn_id)
+  }
+  Progress.find(match, (err, progresses) => {
     if (err) {
       res.status(400).send(err);
       return;

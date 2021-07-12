@@ -160,7 +160,7 @@ async def user_search(ctx):
     response = requests.get(url=url, params=params)
     if response.status_code == 400:
         await bad_request(ctx, response)
-        return
+        return None, -1
     if response.status_code != 200:
         await backend_error(ctx, response)
         return None, -1
@@ -176,7 +176,7 @@ async def user_add(ctx):
     response = requests.post(url=url, data=data)
     if response.status_code == 400:
         await bad_request(ctx, response)
-        return
+        return None, -1
     if response.status_code != 200:
         await backend_error(ctx, response)
         return None, -1
@@ -279,12 +279,13 @@ async def progress_find_id(ctx, acgn_id):
     response = requests.get(url=url, params=params)
     if response.status_code == 400:
         await bad_request(ctx, response)
-        return
+        return None, -1
     if response.status_code != 200:
         await backend_error(ctx, response)
         return None, -1
     data = response.json()
-    return data.get('_id'), 0
+    # it should only contain one result
+    return data[0].get('_id'), 0
 
 
 @progress_commands.command(name='update',
